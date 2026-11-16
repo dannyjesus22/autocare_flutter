@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import '../providers/auth_provider.dart';
 
@@ -24,28 +25,56 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.directions_car,
-              size: 80,
-              color: Colors.blue,
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              '¡Bienvenido a AutoCare!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.directions_car,
+                size: 80,
+                color: Colors.blue,
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              usuario?.email ?? 'Usuario',
-            ),
-          ],
+
+              const SizedBox(height: 20),
+
+              const Text(
+                '¡Bienvenido a AutoCare!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Text(
+                usuario?.email ?? 'Usuario',
+              ),
+
+              const SizedBox(height: 35),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.push('/tipos-mantenimiento');
+                  },
+                  icon: const Icon(Icons.build),
+                  label: const Text(
+                    'Ver tipos de mantenimiento',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

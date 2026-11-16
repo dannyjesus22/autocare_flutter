@@ -1,3 +1,4 @@
+
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -5,6 +6,8 @@ import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/home_screen.dart';
+
+import '../../features/maintenance_types/presentation/screens/pantalla_tipos_mantenimiento.dart';
 
 GoRouter crearRouter(AuthProvider authProvider) {
   return GoRouter(
@@ -44,6 +47,12 @@ GoRouter crearRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/home',
         builder: (context, state) => const HomeScreen(),
+      ),
+
+      GoRoute(
+        path: '/tipos-mantenimiento',
+        builder: (context, state) =>
+        const PantallaTiposMantenimiento(),
       ),
     ],
   );
