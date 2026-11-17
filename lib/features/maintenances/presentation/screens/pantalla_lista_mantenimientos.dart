@@ -30,6 +30,19 @@ class _PantallaListaMantenimientosState
     });
   }
 
+  Future<void> _editarMantenimiento(
+      Mantenimiento mantenimiento,
+      ) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PantallaRegistrarMantenimiento(
+          mantenimiento: mantenimiento,
+        ),
+      ),
+    );
+  }
+
   String _obtenerNombreVehiculo(
       String vehiculoId,
       VehiculoProvider proveedor,
@@ -39,6 +52,7 @@ class _PantallaListaMantenimientosState
         return '${vehiculo.marca} ${vehiculo.modelo}';
       }
     }
+
     return 'Vehículo no encontrado';
   }
 
@@ -51,6 +65,7 @@ class _PantallaListaMantenimientosState
         return tipo.nombre;
       }
     }
+
     return 'Tipo no encontrado';
   }
 
@@ -147,6 +162,16 @@ class _PantallaListaMantenimientosState
                   ),
                 ),
                 IconButton(
+                  tooltip: 'Editar mantenimiento',
+                  onPressed: () {
+                    _editarMantenimiento(mantenimiento);
+                  },
+                  icon: const Icon(
+                    Icons.edit,
+                    color: Colors.blue,
+                  ),
+                ),
+                IconButton(
                   tooltip: 'Eliminar mantenimiento',
                   onPressed: () {
                     _confirmarEliminacion(mantenimiento);
@@ -177,7 +202,9 @@ class _PantallaListaMantenimientosState
             if (mantenimiento.observaciones != null &&
                 mantenimiento.observaciones!.isNotEmpty) ...[
               const SizedBox(height: 6),
-              Text('Observaciones: ${mantenimiento.observaciones}'),
+              Text(
+                'Observaciones: ${mantenimiento.observaciones}',
+              ),
             ],
           ],
         ),

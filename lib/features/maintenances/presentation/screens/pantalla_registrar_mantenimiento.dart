@@ -11,7 +11,12 @@ import '../../domain/entities/mantenimiento.dart';
 import '../providers/mantenimiento_provider.dart';
 
 class PantallaRegistrarMantenimiento extends StatefulWidget {
-  const PantallaRegistrarMantenimiento({super.key});
+  final Mantenimiento? mantenimiento;
+
+  const PantallaRegistrarMantenimiento({
+    super.key,
+    this.mantenimiento,
+  });
 
   @override
   State<PantallaRegistrarMantenimiento> createState() =>
@@ -29,13 +34,34 @@ class _PantallaRegistrarMantenimientoState
   String? _vehiculoSeleccionado;
   String? _tipoSeleccionado;
 
-  DateTime _fechaMantenimiento = DateTime.now();
+  late DateTime _fechaMantenimiento;
 
   bool _guardando = false;
+
+  bool get _estaEditando => widget.mantenimiento != null;
 
   @override
   void initState() {
     super.initState();
+
+    final mantenimiento = widget.mantenimiento;
+
+    _fechaMantenimiento =
+        mantenimiento?.fechaMantenimiento ?? DateTime.now();
+
+    if (mantenimiento != null) {
+      _vehiculoSeleccionado = mantenimiento.vehiculoId;
+      _tipoSeleccionado = mantenimiento.tipoMantenimientoId;
+
+      _kilometrajeControlador.text =
+          mantenimiento.kilometraje.toString();
+
+      _costoControlador.text =
+          mantenimiento.costo.toStringAsFixed(2);
+
+      _observacionesControlador.text =
+          mantenimiento.observaciones ?? '';
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<VehiculoProvider>().cargarVehiculos();
@@ -74,7 +100,9 @@ class _PantallaRegistrarMantenimientoState
     if (_vehiculoSeleccionado == null || _tipoSeleccionado == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Selecciona un vehículo y un tipo de mantenimiento.'),
+          content: Text(
+            'Selecciona un vehículo y un tipo de mantenimiento.',
+          ),
         ),
       );
       return;
@@ -84,31 +112,46 @@ class _PantallaRegistrarMantenimientoState
       _guardando = true;
     });
 
+    final mantenimientoOriginal = widget.mantenimiento;
+
     final mantenimiento = Mantenimiento(
-      id: '',
+      id: mantenimientoOriginal?.id ?? '',
       vehiculoId: _vehiculoSeleccionado!,
       tipoMantenimientoId: _tipoSeleccionado!,
-      usuarioId: '',
+      usuarioId: mantenimientoOriginal?.usuarioId ?? '',
       fechaMantenimiento: _fechaMantenimiento,
-      kilometraje: int.parse(_kilometrajeControlador.text.trim()),
-      costo: double.parse(_costoControlador.text.trim()),
+      kilometraje: int.parse(
+        _kilometrajeControlador.text.trim(),
+      ),
+      costo: double.parse(
+        _costoControlador.text.trim(),
+      ),
       observaciones:
       _observacionesControlador.text.trim().isEmpty
           ? null
           : _observacionesControlador.text.trim(),
-      fechaCreacion: DateTime.now(),
+      fechaCreacion:
+      mantenimientoOriginal?.fechaCreacion ?? DateTime.now(),
     );
 
     try {
-      await context
-          .read<MantenimientoProvider>()
-          .registrarMantenimiento(mantenimiento);
+      final proveedor = context.read<MantenimientoProvider>();
+
+      if (_estaEditando) {
+        await proveedor.actualizarMantenimiento(mantenimiento);
+      } else {
+        await proveedor.registrarMantenimiento(mantenimiento);
+      }
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mantenimiento registrado correctamente.'),
+        SnackBar(
+          content: Text(
+            _estaEditando
+                ? 'Mantenimiento actualizado correctamente.'
+                : 'Mantenimiento registrado correctamente.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -119,7 +162,9 @@ class _PantallaRegistrarMantenimientoState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('No se pudo registrar el mantenimiento: $e'),
+          content: Text(
+            'No se pudo guardar el mantenimiento: $e',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -139,22 +184,34 @@ class _PantallaRegistrarMantenimientoState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registrar mantenimiento'),
+        title: Text(
+          _estaEditando
+              ? 'Editar mantenimiento'
+              : 'Registrar mantenimiento',
+        ),
         centerTitle: true,
       ),
       body: (vehiculoProvider.cargando || tipoProvider.cargando)
-          ? const Center(child: CircularProgressIndicator())
-          : (vehiculoProvider.error != null || tipoProvider.error != null)
+          ? const Center(
+        child: CircularProgressIndicator(),
+      )
+          : (vehiculoProvider.error != null ||
+          tipoProvider.error != null)
           ? Center(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: Colors.red,
+              ),
               const SizedBox(height: 12),
               Text(
-                vehiculoProvider.error ?? tipoProvider.error!,
+                vehiculoProvider.error ??
+                    tipoProvider.error!,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
@@ -174,14 +231,16 @@ class _PantallaRegistrarMantenimientoState
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Text(
-            'Primero debes registrar un vehículo para agregarle mantenimientos.',
+            'Primero debes registrar un vehículo.',
             textAlign: TextAlign.center,
           ),
         ),
       )
           : tipoProvider.tiposMantenimiento.isEmpty
           ? const Center(
-        child: Text('No hay tipos de mantenimiento disponibles.'),
+        child: Text(
+          'No hay tipos de mantenimiento disponibles.',
+        ),
       )
           : _construirFormulario(
         vehiculoProvider.vehiculos,
@@ -201,16 +260,21 @@ class _PantallaRegistrarMantenimientoState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(
-              Icons.car_repair,
+            Icon(
+              _estaEditando ? Icons.edit : Icons.car_repair,
               size: 70,
               color: Colors.blue,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Información del mantenimiento',
+            Text(
+              _estaEditando
+                  ? 'Actualizar mantenimiento'
+                  : 'Información del mantenimiento',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 25),
 
@@ -224,7 +288,9 @@ class _PantallaRegistrarMantenimientoState
               items: vehiculos.map((vehiculo) {
                 return DropdownMenuItem(
                   value: vehiculo.id,
-                  child: Text('${vehiculo.marca} ${vehiculo.modelo}'),
+                  child: Text(
+                    '${vehiculo.marca} ${vehiculo.modelo}',
+                  ),
                 );
               }).toList(),
               onChanged: (valor) {
@@ -255,8 +321,9 @@ class _PantallaRegistrarMantenimientoState
                   _tipoSeleccionado = valor;
                 });
               },
-              validator: (valor) =>
-              valor == null ? 'Selecciona un tipo de mantenimiento' : null,
+              validator: (valor) => valor == null
+                  ? 'Selecciona un tipo de mantenimiento'
+                  : null,
             ),
             const SizedBox(height: 16),
 
@@ -264,7 +331,8 @@ class _PantallaRegistrarMantenimientoState
               onPressed: _seleccionarFecha,
               icon: const Icon(Icons.calendar_today),
               label: Text(
-                'Fecha: ${_fechaMantenimiento.day.toString().padLeft(2, '0')}/'
+                'Fecha: '
+                    '${_fechaMantenimiento.day.toString().padLeft(2, '0')}/'
                     '${_fechaMantenimiento.month.toString().padLeft(2, '0')}/'
                     '${_fechaMantenimiento.year}',
               ),
@@ -285,9 +353,11 @@ class _PantallaRegistrarMantenimientoState
               ),
               validator: (valor) {
                 final kilometraje = int.tryParse(valor ?? '');
+
                 if (kilometraje == null || kilometraje < 0) {
                   return 'Ingresa un kilometraje válido';
                 }
+
                 return null;
               },
             ),
@@ -295,7 +365,8 @@ class _PantallaRegistrarMantenimientoState
 
             TextFormField(
               controller: _costoControlador,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+              const TextInputType.numberWithOptions(decimal: true),
               decoration: const InputDecoration(
                 labelText: 'Costo',
                 hintText: 'Ejemplo: 35.50',
@@ -304,9 +375,13 @@ class _PantallaRegistrarMantenimientoState
               ),
               validator: (valor) {
                 final costo = double.tryParse(valor ?? '');
-                if (costo == null || !costo.isFinite || costo < 0) {
+
+                if (costo == null ||
+                    !costo.isFinite ||
+                    costo < 0) {
                   return 'Ingresa un costo válido';
                 }
+
                 return null;
               },
             ),
@@ -326,16 +401,26 @@ class _PantallaRegistrarMantenimientoState
             const SizedBox(height: 28),
 
             ElevatedButton.icon(
-              onPressed: _guardando ? null : _guardarMantenimiento,
+              onPressed: _guardando
+                  ? null
+                  : _guardarMantenimiento,
               icon: _guardando
                   ? const SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
               )
-                  : const Icon(Icons.save),
+                  : Icon(
+                _estaEditando ? Icons.edit : Icons.save,
+              ),
               label: Text(
-                _guardando ? 'Guardando...' : 'Guardar mantenimiento',
+                _guardando
+                    ? 'Guardando...'
+                    : _estaEditando
+                    ? 'Actualizar mantenimiento'
+                    : 'Guardar mantenimiento',
               ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
