@@ -25,7 +25,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -37,9 +36,7 @@ class HomeScreen extends StatelessWidget {
                 size: 80,
                 color: Colors.blue,
               ),
-
               const SizedBox(height: 20),
-
               const Text(
                 '¡Bienvenido a AutoCare!',
                 style: TextStyle(
@@ -47,13 +44,8 @@ class HomeScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 10),
-
-              Text(
-                usuario?.email ?? 'Usuario',
-              ),
-
+              Text(usuario?.email ?? 'Usuario'),
               const SizedBox(height: 35),
 
               // TIPOS DE MANTENIMIENTO
@@ -64,17 +56,12 @@ class HomeScreen extends StatelessWidget {
                     context.push('/tipos-mantenimiento');
                   },
                   icon: const Icon(Icons.build),
-                  label: const Text(
-                    'Ver tipos de mantenimiento',
-                  ),
+                  label: const Text('Ver tipos de mantenimiento'),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
               ),
-
               const SizedBox(height: 15),
 
               // LISTA DE VEHÍCULOS
@@ -85,17 +72,12 @@ class HomeScreen extends StatelessWidget {
                     context.push('/vehiculos');
                   },
                   icon: const Icon(Icons.directions_car),
-                  label: const Text(
-                    'Mis vehículos',
-                  ),
+                  label: const Text('Mis vehículos'),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
               ),
-
               const SizedBox(height: 15),
 
               // REGISTRAR VEHÍCULO
@@ -106,13 +88,25 @@ class HomeScreen extends StatelessWidget {
                     context.push('/registrar-vehiculo');
                   },
                   icon: const Icon(Icons.add_circle_outline),
-                  label: const Text(
-                    'Registrar vehículo',
-                  ),
+                  label: const Text('Registrar vehículo'),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              // HISTORIAL DE MANTENIMIENTOS
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.push('/mantenimientos');
+                  },
+                  icon: const Icon(Icons.history),
+                  label: const Text('Historial de mantenimientos'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
               ),

@@ -12,6 +12,8 @@ import '../../features/maintenance_types/presentation/screens/pantalla_tipos_man
 import '../../features/vehicles/presentation/screens/pantalla_lista_vehiculos.dart';
 import '../../features/vehicles/presentation/screens/pantalla_registrar_vehiculo.dart';
 
+import '../../features/maintenances/presentation/screens/pantalla_lista_mantenimientos.dart';
+
 GoRouter crearRouter(AuthProvider authProvider) {
   return GoRouter(
     initialLocation: '/login',
@@ -60,6 +62,11 @@ GoRouter crearRouter(AuthProvider authProvider) {
         path: '/registrar-vehiculo',
         builder: (context, state) =>
         const PantallaRegistrarVehiculo(),
+      ),
+      GoRoute(
+        path: '/mantenimientos',
+        builder: (context, state) =>
+        const PantallaListaMantenimientos(),
       ),
     ],
   );
