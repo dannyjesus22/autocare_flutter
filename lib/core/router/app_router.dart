@@ -9,12 +9,13 @@ import '../../features/auth/presentation/screens/home_screen.dart';
 
 import '../../features/maintenance_types/presentation/screens/pantalla_tipos_mantenimiento.dart';
 
+import '../../features/vehicles/presentation/screens/pantalla_lista_vehiculos.dart';
+import '../../features/vehicles/presentation/screens/pantalla_registrar_vehiculo.dart';
+
 GoRouter crearRouter(AuthProvider authProvider) {
   return GoRouter(
     initialLocation: '/login',
-
     refreshListenable: authProvider,
-
     redirect: (context, state) {
       final tieneSesion =
           Supabase.instance.client.auth.currentSession != null;
@@ -32,27 +33,33 @@ GoRouter crearRouter(AuthProvider authProvider) {
 
       return null;
     },
-
     routes: [
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
       ),
-
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
-
       GoRoute(
         path: '/home',
         builder: (context, state) => const HomeScreen(),
       ),
-
       GoRoute(
         path: '/tipos-mantenimiento',
         builder: (context, state) =>
         const PantallaTiposMantenimiento(),
+      ),
+      GoRoute(
+        path: '/vehiculos',
+        builder: (context, state) =>
+        const PantallaListaVehiculos(),
+      ),
+      GoRoute(
+        path: '/registrar-vehiculo',
+        builder: (context, state) =>
+        const PantallaRegistrarVehiculo(),
       ),
     ],
   );

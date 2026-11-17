@@ -56,6 +56,7 @@ class HomeScreen extends StatelessWidget {
 
               const SizedBox(height: 35),
 
+              // TIPOS DE MANTENIMIENTO
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
@@ -65,6 +66,48 @@ class HomeScreen extends StatelessWidget {
                   icon: const Icon(Icons.build),
                   label: const Text(
                     'Ver tipos de mantenimiento',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              // LISTA DE VEHÍCULOS
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.push('/vehiculos');
+                  },
+                  icon: const Icon(Icons.directions_car),
+                  label: const Text(
+                    'Mis vehículos',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              // REGISTRAR VEHÍCULO
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.push('/registrar-vehiculo');
+                  },
+                  icon: const Icon(Icons.add_circle_outline),
+                  label: const Text(
+                    'Registrar vehículo',
                   ),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
